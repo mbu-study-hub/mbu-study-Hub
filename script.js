@@ -604,9 +604,10 @@ function renderSemesterPage(branchKey, yearKey) {
 /* ---------------------------------------------------------------
    SECTION 9 — SUBJECTS PAGE
 --------------------------------------------------------------- */
-function renderSubjectsPage(branchKey, yearKey, semKey) {
+async function renderSubjectsPage(branchKey, yearKey, semKey) {
   var branch = studyData[branchKey];
   if (!branch) return;
+
   state.currentBranch   = branchKey;
   state.currentYear     = yearKey;
   state.currentSemester = semKey;
@@ -630,47 +631,93 @@ function renderSubjectsPage(branchKey, yearKey, semKey) {
         '<div class="empty-state-icon">📭</div>' +
         '<p>No subjects added yet for this semester. Check back soon!</p>' +
       '</div>';
+
     showPage("subjects");
     return;
   }
 
-  subjects.forEach(function(subject, idx) {
+  for (var idx = 0; idx < subjects.length; idx++) {
+    var subject = subjects[idx];
+
     var card = document.createElement("div");
     card.className = "subject-card";
 
-    var materialsHTML = materialTypes.map(function(mat) {
+    var materialsHTML = "";
+
+    for (var m = 0; m < materialTypes.length; m++) {
+      var mat = materialTypes[m];
       var link = subject.materials[mat.key];
+
+      var folderPath =
+        branchKey + "/" +
+        yearKey + "/" +
+        semKey + "/" +
+        subject.name + "/" +
+        mat.label;
+
+      if (!link) {
+        var result = await supabaseClient
+          .storage
+          .from(SUPABASE_BUCKET)
+          .list(folderPath, {
+            limit: 100,
+            sortBy: {
+              column: "name",
+              order: "asc"
+            }
+          });
+
+        if (!result.error && result.data && result.data.length > 0) {
+          var pdfFiles = result.data.filter(function(file) {
+            return file.name.toLowerCase().endsWith(".pdf");
+          });
+
+          if (pdfFiles.length > 0) {
+            link = supabaseClient
+              .storage
+              .from(SUPABASE_BUCKET)
+              .getPublicUrl(
+                folderPath + "/" + pdfFiles[0].name
+              )
+              .data.publicUrl;
+          }
+        }
+      }
+
       if (link) {
-        return '<div class="material-card">' +
-          '<div class="material-icon">' + mat.icon + '</div>' +
-          '<div class="material-type">' + mat.label + '</div>' +
-          '<a href="' + link + '" class="material-btn available" target="_blank" rel="noopener noreferrer">Open PDF</a>' +
+        materialsHTML +=
+          '<div class="material-card">' +
+            '<div class="material-icon">' + mat.icon + '</div>' +
+            '<div class="material-type">' + mat.label + '</div>' +
+            '<a href="' + link + '" class="material-btn available" target="_blank" rel="noopener noreferrer">Open PDF</a>' +
           '</div>';
       } else {
-        return '<div class="material-card">' +
-          '<div class="material-icon">' + mat.icon + '</div>' +
-          '<div class="material-type">' + mat.label + '</div>' +
-          '<span class="material-btn coming-soon">Coming Soon</span>' +
+        materialsHTML +=
+          '<div class="material-card">' +
+            '<div class="material-icon">' + mat.icon + '</div>' +
+            '<div class="material-type">' + mat.label + '</div>' +
+            '<span class="material-btn coming-soon">Coming Soon</span>' +
           '</div>';
       }
-    }).join("");
+    }
 
     card.innerHTML =
       '<div class="subject-header">' +
-        '<div class="subject-num">' + (idx+1) + '</div>' +
+        '<div class="subject-num">' + (idx + 1) + '</div>' +
         '<div>' +
           '<div class="subject-name">' + subject.name + '</div>' +
           (subject.code ? '<div class="subject-code">Code: ' + subject.code + '</div>' : "") +
         '</div>' +
       '</div>' +
-      '<div class="materials-grid">' + materialsHTML + '</div>';
+      '<div class="materials-grid">' +
+        materialsHTML +
+      '</div>';
 
     DOM.subjectsContainer.appendChild(card);
-  });
+  }
 
   showPage("subjects");
 }
-
 /* ---------------------------------------------------------------
    SECTION 10 — SEARCH ENGINE
 --------------------------------------------------------------- */
