@@ -2,6 +2,8 @@
    MBU STUDY HUB — script.js
    Complete SPA with hash-based routing, search, dark mode.
    ============================================================= */
+const SUPABASE_URL = "https://qfhrfvkdaxaxgcjackab.supabase.co";
+const SUPABASE_BUCKET = "pdfs";
 
 "use strict";
 
