@@ -4,9 +4,14 @@
    ============================================================= */
 const SUPABASE_URL = "https://qfhrfvkdaxaxgcjackab.supabase.co";
 const SUPABASE_BUCKET = "pdfs";
+const SUPABASE_KEY = "sb_publishable_3elf4PXm5xWa3HaXYw6jtw_Hrv4Mrxs";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 "use strict";
-
 /* ---------------------------------------------------------------
    SECTION 1 — ACADEMIC DATA
    ---------------------------------------------------------------
