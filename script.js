@@ -644,7 +644,6 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
 
     var materialsHTML = "";
 
-  ```javascript
 for (var m = 0; m < materialTypes.length; m++) {
   var mat = materialTypes[m];
 
