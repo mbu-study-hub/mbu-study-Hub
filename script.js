@@ -715,9 +715,7 @@ for (var m = 0; m < materialTypes.length; m++) {
       '</div>';
   }
 }
-```
-
-
+     
     card.innerHTML =
       '<div class="subject-header">' +
         '<div class="subject-num">' + (idx + 1) + '</div>' +
