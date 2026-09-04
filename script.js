@@ -644,7 +644,8 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
 
     var materialsHTML = "";
 
-   for (var m = 0; m < materialTypes.length; m++) {
+  ```javascript
+for (var m = 0; m < materialTypes.length; m++) {
   var mat = materialTypes[m];
 
   var folderPath =
@@ -675,6 +676,8 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
 
   if (pdfFiles.length > 0) {
 
+    var pdfListHTML = "";
+
     for (var p = 0; p < pdfFiles.length; p++) {
       var pdfFile = pdfFiles[p];
 
@@ -686,14 +689,22 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
         )
         .data.publicUrl;
 
-      materialsHTML +=
-        '<div class="material-card">' +
-          '<div class="material-icon">' + mat.icon + '</div>' +
-          '<div class="material-type">' + mat.label + '</div>' +
-          '<div class="material-name">' + pdfFile.name + '</div>' +
-          '<a href="' + pdfUrl + '" class="material-btn available" target="_blank" rel="noopener noreferrer">Open PDF</a>' +
+      pdfListHTML +=
+        '<div class="pdf-item">' +
+          '<a href="' + pdfUrl + '" class="pdf-name" target="_blank" rel="noopener noreferrer">' +
+            subject.name + " " + (p + 1) +
+          '</a>' +
         '</div>';
     }
+
+    materialsHTML +=
+      '<div class="material-card">' +
+        '<div class="material-icon">' + mat.icon + '</div>' +
+        '<div class="material-type">' + mat.label + '</div>' +
+        '<div class="pdf-list">' +
+          pdfListHTML +
+        '</div>' +
+      '</div>';
 
   } else {
 
@@ -705,8 +716,8 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
       '</div>';
   }
 }
+```
 
-card.innerHTML =
 
     card.innerHTML =
       '<div class="subject-header">' +
