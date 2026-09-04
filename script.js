@@ -644,62 +644,69 @@ async function renderSubjectsPage(branchKey, yearKey, semKey) {
 
     var materialsHTML = "";
 
-    for (var m = 0; m < materialTypes.length; m++) {
-      var mat = materialTypes[m];
-      var link = subject.materials[mat.key];
+   for (var m = 0; m < materialTypes.length; m++) {
+  var mat = materialTypes[m];
 
-      var folderPath =
-        branchKey + "/" +
-        yearKey + "/" +
-        semKey + "/" +
-        subject.name + "/" +
-        mat.label;
+  var folderPath =
+    branchKey + "/" +
+    yearKey + "/" +
+    semKey + "/" +
+    subject.name + "/" +
+    mat.label;
 
-      if (!link) {
-        var result = await supabaseClient
-          .storage
-          .from(SUPABASE_BUCKET)
-          .list(folderPath, {
-            limit: 100,
-            sortBy: {
-              column: "name",
-              order: "asc"
-            }
-          });
-
-        if (!result.error && result.data && result.data.length > 0) {
-          var pdfFiles = result.data.filter(function(file) {
-            return file.name.toLowerCase().endsWith(".pdf");
-          });
-
-          if (pdfFiles.length > 0) {
-            link = supabaseClient
-              .storage
-              .from(SUPABASE_BUCKET)
-              .getPublicUrl(
-                folderPath + "/" + pdfFiles[0].name
-              )
-              .data.publicUrl;
-          }
-        }
+  var result = await supabaseClient
+    .storage
+    .from(SUPABASE_BUCKET)
+    .list(folderPath, {
+      limit: 100,
+      sortBy: {
+        column: "name",
+        order: "asc"
       }
+    });
 
-      if (link) {
-        materialsHTML +=
-          '<div class="material-card">' +
-            '<div class="material-icon">' + mat.icon + '</div>' +
-            '<div class="material-type">' + mat.label + '</div>' +
-            '<a href="' + link + '" class="material-btn available" target="_blank" rel="noopener noreferrer">Open PDF</a>' +
-          '</div>';
-      } else {
-        materialsHTML +=
-          '<div class="material-card">' +
-            '<div class="material-icon">' + mat.icon + '</div>' +
-            '<div class="material-type">' + mat.label + '</div>' +
-            '<span class="material-btn coming-soon">Coming Soon</span>' +
-          '</div>';
-      }
+  var pdfFiles = [];
+
+  if (!result.error && result.data) {
+    pdfFiles = result.data.filter(function(file) {
+      return file.name.toLowerCase().endsWith(".pdf");
+    });
+  }
+
+  if (pdfFiles.length > 0) {
+
+    for (var p = 0; p < pdfFiles.length; p++) {
+      var pdfFile = pdfFiles[p];
+
+      var pdfUrl = supabaseClient
+        .storage
+        .from(SUPABASE_BUCKET)
+        .getPublicUrl(
+          folderPath + "/" + pdfFile.name
+        )
+        .data.publicUrl;
+
+      materialsHTML +=
+        '<div class="material-card">' +
+          '<div class="material-icon">' + mat.icon + '</div>' +
+          '<div class="material-type">' + mat.label + '</div>' +
+          '<div class="material-name">' + pdfFile.name + '</div>' +
+          '<a href="' + pdfUrl + '" class="material-btn available" target="_blank" rel="noopener noreferrer">Open PDF</a>' +
+        '</div>';
     }
+
+  } else {
+
+    materialsHTML +=
+      '<div class="material-card">' +
+        '<div class="material-icon">' + mat.icon + '</div>' +
+        '<div class="material-type">' + mat.label + '</div>' +
+        '<span class="material-btn coming-soon">Coming Soon</span>' +
+      '</div>';
+  }
+}
+
+card.innerHTML =
 
     card.innerHTML =
       '<div class="subject-header">' +
