@@ -1058,16 +1058,17 @@ document.addEventListener("keydown", function(e) {
 /* ---------------------------------------------------------------
    SECTION 17 — INITIALISE
 --------------------------------------------------------------- */
-function init() {
+async function init() {
   initDarkMode();
   renderBranchGrids();
 
   setupUploadPage();
   createUploadButton();
 
+  await checkAdminLogin();
+
   handleRoute();
 }
-
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", init);
 } else {
