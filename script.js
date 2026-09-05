@@ -692,12 +692,17 @@ for (var m = 0; m < materialTypes.length; m++) {
         )
         .data.publicUrl;
 
-      pdfListHTML +=
-        '<div class="pdf-item">' +
-          '<a href="' + pdfUrl + '" class="pdf-name" target="_blank" rel="noopener noreferrer">' +
-            subject.name + " " + (p + 1) +
-          '</a>' +
-        '</div>';
+pdfListHTML +=
+  '<div class="pdf-item" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
+    '<a href="' + pdfUrl + '" class="pdf-name" target="_blank" rel="noopener noreferrer">' +
+      pdfFile.name +
+    '</a>' +
+    '<button type="button" class="delete-pdf-btn" ' +
+      'data-path="' + (folderPath + "/" + pdfFile.name) + '" ' +
+      'style="border:none;background:#ef4444;color:white;padding:7px 10px;border-radius:7px;cursor:pointer;">' +
+      '🗑️ Delete' +
+    '</button>' +
+  '</div>';
     }
 
     materialsHTML +=
