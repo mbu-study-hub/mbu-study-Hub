@@ -27,6 +27,48 @@ async function checkAdminLogin() {
   updateAdminUI();
 }
 
+
+/* ---------------------------------------------------------------
+   ADMIN LOGIN
+--------------------------------------------------------------- */
+
+async function adminLogin() {
+
+  var email = prompt("Enter admin email:");
+
+  if (!email) {
+    return;
+  }
+
+  var password = prompt("Enter admin password:");
+
+  if (!password) {
+    return;
+  }
+
+  var result = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (result.error) {
+    alert("❌ Login failed: " + result.error.message);
+    return;
+  }
+
+  currentUser = result.data.user;
+
+  alert("✅ Admin login successful!");
+
+  updateAdminUI();
+}
+
+
+function updateAdminUI() {
+
+  var uploadButton = document.getElementById("admin-upload-button");
+
+  // ...your existing code continues here
 function updateAdminUI() {
 
   var uploadButton = document.getElementById("admin-upload-button");
