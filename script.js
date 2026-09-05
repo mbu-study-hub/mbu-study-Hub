@@ -755,8 +755,62 @@ DOM.subjectsContainer.appendChild(card);
   showPage("subjects");
 }
 /* ---------------------------------------------------------------
+   DELETE PDF
+--------------------------------------------------------------- */
+
+async function deletePDF(filePath, button) {
+
+  var confirmDelete = confirm(
+    "Are you sure you want to delete this PDF?"
+  );
+
+  if (!confirmDelete) return;
+
+  button.disabled = true;
+  button.textContent = "⏳ Deleting...";
+
+  try {
+
+    var result = await supabaseClient
+      .storage
+      .from(SUPABASE_BUCKET)
+      .remove([filePath]);
+
+    if (result.error) {
+
+      console.error(result.error);
+
+      alert("❌ Delete failed: " + result.error.message);
+
+      button.disabled = false;
+      button.textContent = "🗑️ Delete";
+      return;
+    }
+
+    alert("✅ PDF deleted successfully!");
+
+    renderSubjectsPage(
+      state.currentBranch,
+      state.currentYear,
+      state.currentSemester
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("❌ Something went wrong while deleting.");
+
+    button.disabled = false;
+    button.textContent = "🗑️ Delete";
+  }
+}
+
+
+/* ---------------------------------------------------------------
    SECTION 10 — SEARCH ENGINE
 --------------------------------------------------------------- */
+function buildSearchIndex() {
 function buildSearchIndex() {
   var index = [];
   Object.keys(studyData).forEach(function(branchKey) {
