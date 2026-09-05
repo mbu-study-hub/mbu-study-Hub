@@ -789,6 +789,10 @@ DOM.subjectsContainer.appendChild(card);
 --------------------------------------------------------------- */
 
 async function deletePDF(filePath, button) {
+     if (!currentUser) {
+    alert("❌ Admin login required.");
+    return;
+  }
 
   var confirmDelete = confirm(
     "Are you sure you want to delete this PDF?"
