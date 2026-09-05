@@ -430,6 +430,10 @@ function navigate(hash) { window.location.hash = hash; }
 function handleRoute() {
   const hash  = window.location.hash.replace("#","").toLowerCase();
   const parts = hash.split("/");
+     if (parts[0] === "admin-upload") {
+    openUploadPage();
+    return;
+  }
 
   if (parts[0] === "branch" && parts[1]) {
     /* Decode branch key — try encoded, dash-separated, and raw forms */
