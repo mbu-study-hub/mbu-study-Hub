@@ -736,8 +736,20 @@ pdfListHTML +=
       '<div class="materials-grid">' +
         materialsHTML +
       '</div>';
+DOM.subjectsContainer.appendChild(card);
 
-    DOM.subjectsContainer.appendChild(card);
+    card.querySelectorAll(".delete-pdf-btn").forEach(function(button) {
+
+      button.addEventListener("click", function() {
+
+        deletePDF(
+          button.dataset.path,
+          button
+        );
+
+      });
+
+    });
   }
 
   showPage("subjects");
