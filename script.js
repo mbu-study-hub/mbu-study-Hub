@@ -811,7 +811,6 @@ async function deletePDF(filePath, button) {
    SECTION 10 — SEARCH ENGINE
 --------------------------------------------------------------- */
 function buildSearchIndex() {
-function buildSearchIndex() {
   var index = [];
   Object.keys(studyData).forEach(function(branchKey) {
     var branch = studyData[branchKey];
