@@ -967,3 +967,432 @@ if (document.readyState === "loading") {
 }
 
 window.addEventListener("hashchange", handleRoute);
+/* =============================================================
+   MBU STUDY HUB — DIRECT PDF UPLOAD
+   ============================================================= */
+
+function setupUploadPage() {
+
+  var uploadPage = document.createElement("section");
+  uploadPage.id = "page-upload";
+  uploadPage.className = "page";
+
+  uploadPage.innerHTML = `
+    <div style="
+      max-width:700px;
+      margin:40px auto;
+      padding:30px;
+      background:var(--card-bg,#fff);
+      border-radius:20px;
+      box-shadow:0 8px 30px rgba(0,0,0,.08);
+    ">
+
+      <div style="text-align:center;margin-bottom:30px;">
+        <div style="font-size:45px;">📤</div>
+        <h1>Upload Study Material</h1>
+        <p>Upload PDF directly to MBU Study Hub</p>
+      </div>
+
+      <label>Branch</label>
+      <select id="upload-branch"
+        style="width:100%;padding:12px;margin:8px 0 18px;">
+      </select>
+
+      <label>Year</label>
+      <select id="upload-year"
+        style="width:100%;padding:12px;margin:8px 0 18px;">
+      </select>
+
+      <label>Semester</label>
+      <select id="upload-semester"
+        style="width:100%;padding:12px;margin:8px 0 18px;">
+      </select>
+
+      <label>Subject</label>
+      <select id="upload-subject"
+        style="width:100%;padding:12px;margin:8px 0 18px;">
+      </select>
+
+      <label>Material Type</label>
+      <select id="upload-material"
+        style="width:100%;padding:12px;margin:8px 0 18px;">
+      </select>
+
+      <label>PDF File</label>
+      <input
+        type="file"
+        id="upload-file"
+        accept=".pdf,application/pdf"
+        style="
+          width:100%;
+          padding:12px;
+          margin:8px 0 20px;
+          box-sizing:border-box;
+        "
+      >
+
+      <button id="upload-pdf-btn"
+        style="
+          width:100%;
+          padding:14px;
+          border:none;
+          border-radius:10px;
+          background:#2563eb;
+          color:white;
+          font-size:16px;
+          font-weight:600;
+          cursor:pointer;
+        ">
+        📤 Upload PDF
+      </button>
+
+      <div id="upload-status"
+        style="
+          margin-top:18px;
+          text-align:center;
+          font-weight:600;
+        ">
+      </div>
+
+      <button id="upload-back-btn"
+        style="
+          width:100%;
+          padding:12px;
+          margin-top:12px;
+          border:1px solid #ddd;
+          border-radius:10px;
+          background:transparent;
+          cursor:pointer;
+        ">
+        ← Back
+      </button>
+
+    </div>
+  `;
+
+  document.querySelector("main").appendChild(uploadPage);
+
+  DOM.pages.upload = uploadPage;
+
+  populateUploadBranches();
+
+  document.getElementById("upload-back-btn").onclick = function() {
+    window.location.hash = "#home";
+  };
+
+  document.getElementById("upload-pdf-btn").onclick = uploadPDF;
+}
+
+
+/* ---------- Branch ---------- */
+
+function populateUploadBranches() {
+
+  var select = document.getElementById("upload-branch");
+
+  select.innerHTML = "";
+
+  Object.keys(studyData).forEach(function(branchKey) {
+
+    var option = document.createElement("option");
+
+    option.value = branchKey;
+    option.textContent = branchKey;
+
+    select.appendChild(option);
+  });
+
+  select.onchange = populateUploadYears;
+
+  populateUploadYears();
+}
+
+
+/* ---------- Year ---------- */
+
+function populateUploadYears() {
+
+  var branchKey =
+    document.getElementById("upload-branch").value;
+
+  var select =
+    document.getElementById("upload-year");
+
+  select.innerHTML = "";
+
+  Object.keys(studyData[branchKey].years).forEach(function(yearKey) {
+
+    var option = document.createElement("option");
+
+    option.value = yearKey;
+    option.textContent = yearKey;
+
+    select.appendChild(option);
+  });
+
+  select.onchange = populateUploadSemesters;
+
+  populateUploadSemesters();
+}
+
+
+/* ---------- Semester ---------- */
+
+function populateUploadSemesters() {
+
+  var branchKey =
+    document.getElementById("upload-branch").value;
+
+  var yearKey =
+    document.getElementById("upload-year").value;
+
+  var select =
+    document.getElementById("upload-semester");
+
+  select.innerHTML = "";
+
+  Object.keys(
+    studyData[branchKey].years[yearKey]
+  ).forEach(function(semKey) {
+
+    var option = document.createElement("option");
+
+    option.value = semKey;
+    option.textContent = semKey;
+
+    select.appendChild(option);
+  });
+
+  select.onchange = populateUploadSubjects;
+
+  populateUploadSubjects();
+}
+
+
+/* ---------- Subject ---------- */
+
+function populateUploadSubjects() {
+
+  var branchKey =
+    document.getElementById("upload-branch").value;
+
+  var yearKey =
+    document.getElementById("upload-year").value;
+
+  var semester =
+    document.getElementById("upload-semester").value;
+
+  var select =
+    document.getElementById("upload-subject");
+
+  select.innerHTML = "";
+
+  var subjects =
+    studyData[branchKey]
+      .years[yearKey]
+      [semester]
+      .subjects || [];
+
+  subjects.forEach(function(subject) {
+
+    var option = document.createElement("option");
+
+    option.value = subject.name;
+    option.textContent = subject.name;
+
+    select.appendChild(option);
+  });
+
+  if (subjects.length === 0) {
+
+    var option = document.createElement("option");
+
+    option.value = "";
+    option.textContent = "No subjects available";
+
+    select.appendChild(option);
+  }
+
+  populateUploadMaterials();
+}
+
+
+/* ---------- Material ---------- */
+
+function populateUploadMaterials() {
+
+  var select =
+    document.getElementById("upload-material");
+
+  select.innerHTML = "";
+
+  materialTypes.forEach(function(material) {
+
+    var option = document.createElement("option");
+
+    option.value = material.label;
+    option.textContent =
+      material.icon + " " + material.label;
+
+    select.appendChild(option);
+  });
+}
+
+
+/* ---------- Upload ---------- */
+
+async function uploadPDF() {
+
+  var branch =
+    document.getElementById("upload-branch").value;
+
+  var year =
+    document.getElementById("upload-year").value;
+
+  var semester =
+    document.getElementById("upload-semester").value;
+
+  var subject =
+    document.getElementById("upload-subject").value;
+
+  var material =
+    document.getElementById("upload-material").value;
+
+  var fileInput =
+    document.getElementById("upload-file");
+
+  var status =
+    document.getElementById("upload-status");
+
+  var button =
+    document.getElementById("upload-pdf-btn");
+
+  var file = fileInput.files[0];
+
+  if (!file) {
+    status.textContent = "❌ Please choose a PDF file.";
+    return;
+  }
+
+  if (
+    file.type !== "application/pdf" &&
+    !file.name.toLowerCase().endsWith(".pdf")
+  ) {
+    status.textContent = "❌ Only PDF files are allowed.";
+    return;
+  }
+
+  if (!subject) {
+    status.textContent = "❌ Please select a subject.";
+    return;
+  }
+
+  var safeFileName =
+    file.name
+      .replace(/[\\/:*?"<>|#%{}]/g, "_")
+      .trim();
+
+  var filePath =
+    branch + "/" +
+    year + "/" +
+    semester + "/" +
+    subject + "/" +
+    material + "/" +
+    safeFileName;
+
+  button.disabled = true;
+  button.textContent = "⏳ Uploading...";
+  status.textContent = "";
+
+  try {
+
+    var result =
+      await supabaseClient
+        .storage
+        .from(SUPABASE_BUCKET)
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: "application/pdf"
+          }
+        );
+
+    if (result.error) {
+
+      console.error(result.error);
+
+      status.textContent =
+        "❌ Upload failed: " +
+        result.error.message;
+
+      return;
+    }
+
+    status.textContent =
+      "✅ PDF uploaded successfully!";
+
+    fileInput.value = "";
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      "❌ Something went wrong.";
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "📤 Upload PDF";
+  }
+}
+
+
+/* =============================================================
+   OPEN UPLOAD PAGE
+   ============================================================= */
+
+function openUploadPage() {
+
+  if (!DOM.pages.upload) {
+    setupUploadPage();
+  }
+
+  showPage("upload");
+}
+
+
+/* =============================================================
+   UPLOAD BUTTON
+   ============================================================= */
+
+function createUploadButton() {
+
+  var button = document.createElement("button");
+
+  button.textContent = "📤 Upload PDF";
+
+  button.style.cssText = `
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:9999;
+    padding:13px 18px;
+    border:none;
+    border-radius:30px;
+    background:#2563eb;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 6px 20px rgba(0,0,0,.2);
+  `;
+
+  button.onclick = function() {
+    window.location.hash = "#admin-upload";
+  };
+
+  document.body.appendChild(button);
+}
