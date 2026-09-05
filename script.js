@@ -961,6 +961,10 @@ document.addEventListener("keydown", function(e) {
 function init() {
   initDarkMode();
   renderBranchGrids();
+
+  setupUploadPage();
+  createUploadButton();
+
   handleRoute();
 }
 
