@@ -1466,6 +1466,12 @@ async function uploadPDF() {
 
 function openUploadPage() {
 
+  if (!currentUser) {
+    alert("❌ Admin login required.");
+    window.location.hash = "#home";
+    return;
+  }
+
   if (!DOM.pages.upload) {
     setupUploadPage();
   }
