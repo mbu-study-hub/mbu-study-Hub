@@ -63,12 +63,6 @@ async function adminLogin() {
   updateAdminUI();
 }
 
-
-function updateAdminUI() {
-
-  var uploadButton = document.getElementById("admin-upload-button");
-
-  // ...your existing code continues here
 function updateAdminUI() {
 
   var uploadButton = document.getElementById("admin-upload-button");
