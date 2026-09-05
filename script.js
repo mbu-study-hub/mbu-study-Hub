@@ -11,7 +11,37 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
 
+/* ---------------------------------------------------------------
+   ADMIN AUTHENTICATION
+--------------------------------------------------------------- */
+
+var currentUser = null;
+
+async function checkAdminLogin() {
+  var result = await supabaseClient.auth.getSession();
+
+  currentUser = result.data.session
+    ? result.data.session.user
+    : null;
+
+  updateAdminUI();
+}
+
+function updateAdminUI() {
+
+  var uploadButton = document.getElementById("admin-upload-button");
+
+  if (uploadButton) {
+    uploadButton.style.display = currentUser ? "block" : "none";
+  }
+
+  document.querySelectorAll(".delete-pdf-btn").forEach(function(button) {
+    button.style.display = currentUser ? "inline-block" : "none";
+  });
+}
+
 "use strict";
+
 /* ---------------------------------------------------------------
    SECTION 1 — ACADEMIC DATA
    ---------------------------------------------------------------
