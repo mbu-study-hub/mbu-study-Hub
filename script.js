@@ -1392,6 +1392,12 @@ function populateUploadMaterials() {
 
 async function uploadPDF() {
 
+  if (!currentUser) {
+    alert("❌ Admin login required.");
+    window.location.hash = "#home";
+    return;
+  }
+
   var branch =
     document.getElementById("upload-branch").value;
 
