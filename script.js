@@ -1482,6 +1482,7 @@ function createUploadButton() {
 
   var button = document.createElement("button");
 
+  button.id = "admin-upload-button";
   button.textContent = "📤 Upload PDF";
 
   button.style.cssText = `
