@@ -1432,89 +1432,171 @@ async function uploadPDF() {
   var button =
     document.getElementById("upload-pdf-btn");
 
-  var file = fileInput.files[0];
+  var files =
+    Array.from(fileInput.files);
 
-  if (!file) {
-    status.textContent = "❌ Please choose a PDF file.";
-    return;
-  }
-
-  if (
-    file.type !== "application/pdf" &&
-    !file.name.toLowerCase().endsWith(".pdf")
-  ) {
-    status.textContent = "❌ Only PDF files are allowed.";
+  if (files.length === 0) {
+    status.textContent =
+      "❌ Please choose one or more PDF files.";
     return;
   }
 
   if (!subject) {
-    status.textContent = "❌ Please select a subject.";
+    status.textContent =
+      "❌ Please select a subject.";
     return;
   }
 
-  var safeFileName =
-    file.name
-      .replace(/[\\/:*?"<>|#%{}]/g, "_")
-      .trim();
+  var invalidFiles =
+    files.filter(function(file) {
+      return (
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
+      );
+    });
 
-  var filePath =
-    branch + "/" +
-    year + "/" +
-    semester + "/" +
-    subject + "/" +
-    material + "/" +
-    safeFileName;
+  if (invalidFiles.length > 0) {
+    status.innerHTML =
+      "❌ Only PDF files are allowed.<br>" +
+      "Invalid file: <strong>" +
+      escapeHtml(invalidFiles[0].name) +
+      "</strong>";
+    return;
+  }
+
+  var selectedFiles =
+    document.getElementById("selected-files");
+
+  if (selectedFiles) {
+    selectedFiles.innerHTML =
+      "<strong>" +
+      files.length +
+      " PDF file" +
+      (files.length !== 1 ? "s" : "") +
+      " selected</strong>";
+  }
 
   button.disabled = true;
   button.textContent = "⏳ Uploading...";
-  status.textContent = "";
+  status.innerHTML = "";
 
-  try {
+  var successCount = 0;
+  var failedCount = 0;
 
-    var result =
-      await supabaseClient
-        .storage
-        .from(SUPABASE_BUCKET)
-        .upload(
-          filePath,
-          file,
-          {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: "application/pdf"
-          }
+  for (var i = 0; i < files.length; i++) {
+
+    var file = files[i];
+
+    var safeFileName =
+      file.name
+        .replace(/[\\/:*?"<>|#%{}]/g, "_")
+        .trim();
+
+    var filePath =
+      branch + "/" +
+      year + "/" +
+      semester + "/" +
+      subject + "/" +
+      material + "/" +
+      safeFileName;
+
+    status.innerHTML =
+      "⏳ Uploading " +
+      (i + 1) +
+      " of " +
+      files.length +
+      ":<br><strong>" +
+      escapeHtml(file.name) +
+      "</strong>";
+
+    try {
+
+      var result =
+        await supabaseClient
+          .storage
+          .from(SUPABASE_BUCKET)
+          .upload(
+            filePath,
+            file,
+            {
+              cacheControl: "3600",
+              upsert: false,
+              contentType: "application/pdf"
+            }
+          );
+
+      if (result.error) {
+
+        console.error(
+          "Upload failed:",
+          file.name,
+          result.error
         );
 
-    if (result.error) {
+        failedCount++;
 
-      console.error(result.error);
+        status.innerHTML =
+          "❌ Failed: <strong>" +
+          escapeHtml(file.name) +
+          "</strong><br>" +
+          escapeHtml(result.error.message);
 
-      status.textContent =
-        "❌ Upload failed: " +
-        result.error.message;
+        continue;
+      }
 
-      return;
+      successCount++;
+
+      status.innerHTML =
+        "✅ Uploaded " +
+        successCount +
+        " of " +
+        files.length +
+        "<br><strong>" +
+        escapeHtml(file.name) +
+        "</strong>";
+
+    } catch (error) {
+
+      console.error(
+        "Upload error:",
+        file.name,
+        error
+      );
+
+      failedCount++;
+
+      status.innerHTML =
+        "❌ Error uploading:<br><strong>" +
+        escapeHtml(file.name) +
+        "</strong>";
     }
-
-    status.textContent =
-      "✅ PDF uploaded successfully!";
-
-    fileInput.value = "";
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "❌ Something went wrong.";
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = "📤 Upload PDF";
   }
-}
 
+  if (failedCount === 0) {
+
+    status.innerHTML =
+      "✅ All " +
+      successCount +
+      " PDF files uploaded successfully!";
+
+  } else {
+
+    status.innerHTML =
+      "✅ Uploaded: " +
+      successCount +
+      "<br>❌ Failed: " +
+      failedCount;
+  }
+
+  fileInput.value = "";
+
+  if (selectedFiles) {
+    selectedFiles.innerHTML = "";
+  }
+
+  button.disabled = false;
+  button.textContent = "📤 Upload PDFs";
+}
 
 /* =============================================================
    OPEN UPLOAD PAGE
