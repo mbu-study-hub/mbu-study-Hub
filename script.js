@@ -1167,18 +1167,28 @@ function setupUploadPage() {
         style="width:100%;padding:12px;margin:8px 0 18px;">
       </select>
 
-      <label>PDF File</label>
-      <input
-        type="file"
-        id="upload-file"
-        accept=".pdf,application/pdf"
-        style="
-          width:100%;
-          padding:12px;
-          margin:8px 0 20px;
-          box-sizing:border-box;
-        "
-      >
+    <label>PDF Files</label>
+<input
+  type="file"
+  id="upload-file"
+  accept=".pdf,application/pdf"
+  multiple
+  style="
+    width:100%;
+    padding:12px;
+    margin:8px 0 20px;
+    box-sizing:border-box;
+  "
+>
+
+<div
+  id="selected-files"
+  style="
+    margin:-8px 0 20px;
+    font-size:14px;
+    line-height:1.6;
+  "
+></div>
 
       <button id="upload-pdf-btn"
         style="
