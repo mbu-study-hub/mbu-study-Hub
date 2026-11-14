@@ -264,10 +264,38 @@ const studyData = {
           { name: "English for Proficiency (STEP)",              code: "", materials: { notes: null, lab: null, papers: null, syllabus: null } }
         ]}
       },
-      "2nd Year": {
-        "Semester 3": { subjects: [] },
-        "Semester 4": { subjects: [] }
+     "2nd Year": {
+  "Semester 3": {
+    subjects: [
+      {
+        name: "Special Functions and Complex Analysis",
+        code: "",
+        materials: { notes: null, lab: null, papers: null, syllabus: null }
       },
+      {
+        name: "Signals and Systems",
+        code: "",
+        materials: { notes: null, lab: null, papers: null, syllabus: null }
+      },
+      {
+        name: "Digital Design",
+        code: "",
+        materials: { notes: null, lab: null, papers: null, syllabus: null }
+      },
+      {
+        name: "Electronic Circuit Analysis and Design",
+        code: "",
+        materials: { notes: null, lab: null, papers: null, syllabus: null }
+      },
+      {
+        name: "Problem Solving Through Python",
+        code: "",
+        materials: { notes: null, lab: null, papers: null, syllabus: null }
+      }
+    ]
+  },
+  "Semester 4": { subjects: [] }
+},
       "3rd Year": {
         "Semester 5": { subjects: [] },
         "Semester 6": { subjects: [] }
