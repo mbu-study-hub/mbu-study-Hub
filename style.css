@@ -965,3 +965,24 @@ img { max-width: 100%; display: block; }
   .year-grid { grid-template-columns: 1fr; }
   .materials-grid { grid-template-columns: 1fr; }
 }
+/* ---------------------------------------------------------------
+   19. DISCLAIMER
+--------------------------------------------------------------- */
+.disclaimer {
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  text-align: center;
+  padding: 10px 15px;
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+.disclaimer p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.disclaimer strong {
+  color: var(--primary);
+  font-weight: 700;
+}
