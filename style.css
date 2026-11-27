@@ -969,12 +969,12 @@ img { max-width: 100%; display: block; }
    19. DISCLAIMER
 --------------------------------------------------------------- */
 .disclaimer {
-  background: var(--bg-alt);
-  color: var(--text-muted);
+  background: linear-gradient(90deg, #e0f2fe, #dbeafe, #ede9fe);
+  color: #1e3a8a;
   text-align: center;
-  padding: 10px 15px;
+  padding: 12px 15px;
   font-size: 13px;
-  border-top: 1px solid var(--border);
+  border-bottom: 1px solid #bfdbfe;
 }
 
 .disclaimer p {
@@ -983,6 +983,6 @@ img { max-width: 100%; display: block; }
 }
 
 .disclaimer strong {
-  color: var(--primary);
+  color: #1d4ed8;
   font-weight: 700;
 }
